@@ -1,0 +1,17 @@
+katharsis:
+  host:          http://localhost:8080
+  searchPackage: com.example.helloworld
+
+server:
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8080
+
+logging:
+  level: INFO
+
+  appenders:
+    - type: console
