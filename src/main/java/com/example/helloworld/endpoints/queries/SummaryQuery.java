@@ -1,12 +1,12 @@
 package com.example.helloworld.endpoints.queries;
 
+import com.example.helloworld.HelloWorldApplication;
 import com.example.helloworld.endpoints.resource.Section;
 import com.example.helloworld.endpoints.resource.Summary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +18,8 @@ public class SummaryQuery {
 
     private Connection c;
     private Statement stmt;
+
+    private static final Logger log = LoggerFactory.getLogger(SummaryQuery.class);
 
     public SummaryQuery()
     {
@@ -34,8 +36,12 @@ public class SummaryQuery {
     {
         try {
             stmt = c.createStatement();
-            String sql = "select * from bnr.bnr_out_gaps where scan_id = '"+id.toString()+"' order by section asc";
+            //String sql = "select * from bnr.bnr_out_gaps where scan_id = '"+id.toString()+"' order by section asc";
 
+            String sql = "select scan_id, aisle, section, count(section) as section_count, sum(count(section)) over () as total " +
+                    "from bnr.bnr_out_gaps " +
+                    "where scan_id = '"+id.toString()+"' " +
+                    "group by section,aisle, scan_id order by (section::integer)";
             ResultSet rs = stmt.executeQuery(sql);
 
             Summary L = mapper(rs);
@@ -49,96 +55,32 @@ public class SummaryQuery {
         return null;
     }
 
-    public List<Section> getSections(UUID id)
-    {
-        try {
-            stmt = c.createStatement();
-            String sql = "select * from bnr.bnr_out_gaps where scan_id = '"+id.toString()+"' order by section asc";
-
-            System.out.println(sql + "\n\n");
-            ResultSet rs = stmt.executeQuery(sql);
-
-            List<Section> L = sectionMapper(rs);
-
-            System.out.println(L);
-
-            return L;
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<Section> sectionMapper(ResultSet rs)
-    {
-        int sTotal = 0;
-
-        List<Section> sections = new ArrayList();
-        String prevSection = "";
-        //one aisle per scan id
-        try {
-            while (rs.next()) {
-
-                String section = rs.getString("section");
-                System.out.println(section);
-                if (!prevSection.isEmpty() && !section.equals(prevSection))
-                {
-                    sections.add(new Section(prevSection,sTotal));
-                    sTotal = 0;
-
-                }
-                prevSection = section;
-                sTotal++;
-
-
-
-            }
-            sections.add(new Section(prevSection,sTotal));
-            return sections;
-
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
 
     public Summary mapper(ResultSet rs)
     {
-        int total = 0;
-        int sTotal = 0;
+        int total = -1;
         String aisle = null;
         UUID id = null;
         List<Section> sections = new ArrayList();
-        String prevSection = "";
         //one aisle per scan id
+
         try {
             while (rs.next()) {
-                id = UUID.fromString(rs.getString("scan_id"));
-                aisle = rs.getString("aisle");
-
-                String section = rs.getString("section");
-                if (!prevSection.isEmpty() && !section.equals(prevSection))
+                if (aisle == null && total == -1 && id ==null)
                 {
-                    sections.add(new Section(prevSection,sTotal));
-                    sTotal = 0;
-
+                    aisle = rs.getString("aisle");
+                    total = rs.getInt("total");
+                    id = UUID.fromString(rs.getString("scan_id"));
                 }
-                prevSection = section;
-                sTotal++;
-                total++;
+                sections.add(new Section(rs.getString("section"), rs.getInt("section_count")));
 
 
             }
-            sections.add(new Section(prevSection,sTotal));
             return new Summary(id, aisle,total, sections);
 
-        } catch (Exception e)
+        } catch (SQLException e)
         {
-            e.printStackTrace();
+            log.error("SQL exception");
         }
         return null;
     }

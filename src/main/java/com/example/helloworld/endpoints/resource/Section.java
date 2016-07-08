@@ -7,7 +7,7 @@ import io.katharsis.resource.annotations.*;
  */
 
 
-@JsonApiResource(type = "section")
+//@JsonApiResource(type = "section")
 public class Section {
 
     public Section(String section, int count)
@@ -16,14 +16,8 @@ public class Section {
         this.gapCount = count;
     }
 
-    @JsonApiId
-    @JsonApiLookupIncludeAutomatically
     private String section;
 
-    //@JsonApiToMany(lazy = false)
-    @JsonApiIncludeByDefault
-    @JsonApiLookupIncludeAutomatically
-    @JsonApiToOne
     private int gapCount;
 
     public String getSection()

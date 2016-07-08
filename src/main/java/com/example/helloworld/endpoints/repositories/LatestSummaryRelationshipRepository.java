@@ -2,6 +2,7 @@ package com.example.helloworld.endpoints.repositories;
 
 import com.example.helloworld.endpoints.resource.Latest;
 import com.example.helloworld.endpoints.resource.Section;
+import com.example.helloworld.endpoints.resource.Summary;
 import io.katharsis.queryParams.QueryParams;
 import io.katharsis.repository.annotations.*;
 
@@ -11,10 +12,10 @@ import java.util.UUID;
  * Created by vagrant on 7/8/16.
  */
 
-@JsonApiRelationshipRepository(source = Latest.class, target = Section.class)
-public class LatestSectionRelationshipRepository {
+@JsonApiRelationshipRepository(source = Latest.class, target = Summary.class)
+public class LatestSummaryRelationshipRepository {
 
-    public LatestSectionRelationshipRepository() {
+    public LatestSummaryRelationshipRepository() {
 
     }
 
@@ -35,7 +36,7 @@ public class LatestSectionRelationshipRepository {
 
 
     @JsonApiFindOneTarget
-    public Section findOneTarget(UUID sourceId, String fieldName, QueryParams requestParams) {
+    public Summary findOneTarget(UUID sourceId, String fieldName, QueryParams requestParams) {
 
         return null;
     }

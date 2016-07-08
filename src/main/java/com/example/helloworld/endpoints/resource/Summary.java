@@ -27,16 +27,17 @@ public class Summary {
 
     private int totalGaps;
 
-    /*private int gapCount;
+    /*for section*/
+    private String gapCount;
     private String section;
-    public int getGapCount()
+    public String getGapCount()
     {
         return gapCount;
     }
     public String getSection()
     {
         return section;
-    }*/
+    }
 
     //@JsonApiToMany(lazy = false)
     //@JsonApiIncludeByDefault

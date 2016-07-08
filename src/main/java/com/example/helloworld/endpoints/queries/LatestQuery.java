@@ -1,11 +1,14 @@
 package com.example.helloworld.endpoints.queries;
 
+import com.example.helloworld.HelloWorldApplication;
 import com.example.helloworld.endpoints.resource.Latest;
 import com.example.helloworld.endpoints.resource.Summary;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.nio.cs.ISO_8859_7;
 
 import java.sql.Connection;
@@ -24,6 +27,8 @@ import java.util.UUID;
 public class LatestQuery {
     private Connection c;
     private Statement stmt;
+
+    private static final Logger log = LoggerFactory.getLogger(LatestQuery.class);
 
     public LatestQuery()
     {
@@ -117,7 +122,7 @@ public class LatestQuery {
             }
         } catch (Exception e)
         {
-            e.printStackTrace();
+            log.error("SQL exception");
         }
 
         return latest;

@@ -55,7 +55,6 @@ public class Latest implements Serializable {
     private String changerStamp;
 
     @JsonApiToOne
-    //@JsonApiIncludeByDefault
     private Summary summary;
 
     public Summary getSummary()
