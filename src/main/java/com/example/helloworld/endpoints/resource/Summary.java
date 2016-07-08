@@ -1,8 +1,8 @@
 package com.example.helloworld.endpoints.resource;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.resource.annotations.*;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -12,11 +12,12 @@ import java.util.UUID;
 @JsonApiResource(type = "summary")
 public class Summary {
 
-    public Summary(UUID id, String aisle, int gapCount)
+    public Summary(UUID id, String aisle, int gapCount, List<Section> sections)
     {
         this.id = id;
         this.aisle = aisle;
-        this.gapCount = gapCount;
+        this.totalGaps = gapCount;
+        this.sections = sections;
     }
 
     @JsonApiId
@@ -24,7 +25,23 @@ public class Summary {
 
     private String aisle;
 
-    private int gapCount;
+    private int totalGaps;
+
+    /*private int gapCount;
+    private String section;
+    public int getGapCount()
+    {
+        return gapCount;
+    }
+    public String getSection()
+    {
+        return section;
+    }*/
+
+    //@JsonApiToMany(lazy = false)
+    //@JsonApiIncludeByDefault
+    //@JsonApiLookupIncludeAutomatically
+    private List<Section> sections;
 
     public UUID getId()
     {
@@ -36,9 +53,14 @@ public class Summary {
         return aisle;
     }
 
-    public int getGapCount()
+    public int getTotalGaps()
     {
-        return gapCount;
+        return totalGaps;
+    }
+
+    public List<Section> getSections()
+    {
+        return sections;
     }
 
 

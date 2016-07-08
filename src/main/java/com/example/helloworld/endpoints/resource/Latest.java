@@ -1,7 +1,6 @@
 package com.example.helloworld.endpoints.resource;
 
-import io.katharsis.resource.annotations.JsonApiId;
-import io.katharsis.resource.annotations.JsonApiResource;
+import io.katharsis.resource.annotations.*;
 import org.joda.time.DateTime;
 
 import java.io.Serializable;
@@ -16,7 +15,7 @@ import java.util.UUID;
 public class Latest implements Serializable {
 
     public Latest(UUID id, UUID missionId, String workAddress, String mission, String storeId, UUID retailerId, DateTime timeStamp,
-                  String correlationId, String image, List<Double> transform, String changerStamp)
+                  String correlationId, String image, List<Double> transform, String changerStamp, Summary s)
     {
         this.id = id;
         this.missionId = missionId;
@@ -29,6 +28,7 @@ public class Latest implements Serializable {
         this.image = image;
         this.transform = transform;
         this.changerStamp = changerStamp;
+        this.summary = s;
     }
 
     @JsonApiId
@@ -53,6 +53,16 @@ public class Latest implements Serializable {
     private List<Double> transform;
 
     private String changerStamp;
+
+    @JsonApiToOne
+    //@JsonApiIncludeByDefault
+    private Summary summary;
+
+    public Summary getSummary()
+    {
+        return summary;
+    }
+
 
     public UUID getId()
     {

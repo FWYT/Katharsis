@@ -1,12 +1,18 @@
 package com.example.helloworld.endpoints.queries;
 
 import com.example.helloworld.endpoints.resource.Latest;
+import com.example.helloworld.endpoints.resource.Summary;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+import sun.nio.cs.ISO_8859_7;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -81,14 +87,18 @@ public class LatestQuery {
     {
         List<Latest> latest = new ArrayList();
         try {
+            UUID id;
             while (rs.next()) {
-                UUID id = UUID.fromString(rs.getString("id"));
+                id = UUID.fromString(rs.getString("id"));
                 UUID missionId = UUID.fromString(rs.getString("mission_id"));
                 String workAddress = rs.getString("work_address");
                 String mission = rs.getString("mission");
                 String storeId = rs.getString("store_id");
                 UUID retailerId = UUID.fromString(rs.getString("retailer_id"));
+
                 DateTime timeStamp = new DateTime(rs.getTimestamp("time_stamp"));
+
+
                 String correlation_id = rs.getString("correlation_id");
                 String image = rs.getString("image");
 
@@ -99,7 +109,11 @@ public class LatestQuery {
                     transform = null;
                 String changerStamp = rs.getString("changer_stamp");
 
-                latest.add(new Latest(id,missionId, workAddress, mission, storeId, retailerId, timeStamp, correlation_id, image, transform, changerStamp));
+                SummaryQuery sq = new SummaryQuery();
+                Summary s = sq.getGapCount(id);
+
+                latest.add(new Latest(id,missionId, workAddress, mission, storeId, retailerId, timeStamp, correlation_id, image, transform,
+                        changerStamp, s));
             }
         } catch (Exception e)
         {

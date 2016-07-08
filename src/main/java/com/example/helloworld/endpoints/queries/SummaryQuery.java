@@ -1,11 +1,13 @@
 package com.example.helloworld.endpoints.queries;
 
+import com.example.helloworld.endpoints.resource.Section;
 import com.example.helloworld.endpoints.resource.Summary;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +34,7 @@ public class SummaryQuery {
     {
         try {
             stmt = c.createStatement();
-            String sql = "select * from bnr.bnr_out_gaps where scan_id = '"+id+"' order by aisle asc";
+            String sql = "select * from bnr.bnr_out_gaps where scan_id = '"+id.toString()+"' order by section asc";
 
             ResultSet rs = stmt.executeQuery(sql);
 
@@ -47,27 +49,92 @@ public class SummaryQuery {
         return null;
     }
 
+    public List<Section> getSections(UUID id)
+    {
+        try {
+            stmt = c.createStatement();
+            String sql = "select * from bnr.bnr_out_gaps where scan_id = '"+id.toString()+"' order by section asc";
+
+            System.out.println(sql + "\n\n");
+            ResultSet rs = stmt.executeQuery(sql);
+
+            List<Section> L = sectionMapper(rs);
+
+            System.out.println(L);
+
+            return L;
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Section> sectionMapper(ResultSet rs)
+    {
+        int sTotal = 0;
+
+        List<Section> sections = new ArrayList();
+        String prevSection = "";
+        //one aisle per scan id
+        try {
+            while (rs.next()) {
+
+                String section = rs.getString("section");
+                System.out.println(section);
+                if (!prevSection.isEmpty() && !section.equals(prevSection))
+                {
+                    sections.add(new Section(prevSection,sTotal));
+                    sTotal = 0;
+
+                }
+                prevSection = section;
+                sTotal++;
+
+
+
+            }
+            sections.add(new Section(prevSection,sTotal));
+            return sections;
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
     public Summary mapper(ResultSet rs)
     {
-        int count = 0;
+        int total = 0;
+        int sTotal = 0;
         String aisle = null;
-        String lastAisle = "";
         UUID id = null;
+        List<Section> sections = new ArrayList();
+        String prevSection = "";
+        //one aisle per scan id
         try {
             while (rs.next()) {
                 id = UUID.fromString(rs.getString("scan_id"));
                 aisle = rs.getString("aisle");
 
-                /*if (!lastAisle.equals("") && !aisle.equals(lastAisle))
+                String section = rs.getString("section");
+                if (!prevSection.isEmpty() && !section.equals(prevSection))
                 {
-                    count = 0;
+                    sections.add(new Section(prevSection,sTotal));
+                    sTotal = 0;
+
                 }
-                */
-                count++;
+                prevSection = section;
+                sTotal++;
+                total++;
 
 
             }
-            return new Summary(id, aisle,count);
+            sections.add(new Section(prevSection,sTotal));
+            return new Summary(id, aisle,total, sections);
 
         } catch (Exception e)
         {

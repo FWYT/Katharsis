@@ -20,7 +20,7 @@ public class ResourceIT {
     public void testGet()
     {
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/latest");
+        WebTarget target = client.target("http://localhost:8080/latest/?include[latest]=summary");
 
         Response response = target.request().get();
 
@@ -33,7 +33,7 @@ public class ResourceIT {
     public void testGapCount()
     {
         Client client = ClientBuilder.newClient();
-        WebTarget target = client.target("http://localhost:8080/summary/26182e4f-3462-49d8-9a9b-0a7c877e0de6");
+        WebTarget target = client.target("http://localhost:8080/summary/243e99be-ca8d-4462-9476-a26426c88a0a");
 
         Response response = target.request().get();
 
